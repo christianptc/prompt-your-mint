@@ -1,4 +1,9 @@
-const RULES = `## Rules (follow strictly)
+// Default prompt template. Tokens in [BRACKETS] are replaced at copy/save time:
+//   [AUFGABE]  → the exercise body extracted from the page (buildExerciseBody)
+//   [TITEL]    → the auto-generated title
+//   [SPRACHE]  → the output language chosen in settings
+const DEFAULT_TEMPLATE = `# Task: Universal formulas for a MINT.SH exercise
+## Rules (follow strictly)
 
 ### Structure
 1. Answer EVERY box and EVERY multiple-choice question. Do not skip any.
@@ -40,7 +45,14 @@ const RULES = `## Rules (follow strictly)
 ### Formatting
 10. Separate every question/box block with a blank line. Place ════════════════ between EACH Teilaufgabe — that means after every Teilaufgabe ends and before the next one begins, including between Teilaufgabe 1 and 2, 2 and 3, etc.
 11. Responses must be short. One clause per explanation — no padding, no restating the problem.
-12. Output language: German.`;
+12. Output language: [SPRACHE].
+
+[AUFGABE]`;
+
+const DEFAULT_LANGUAGE = 'German';
+
+// Live settings (loaded from chrome.storage.local, falling back to defaults)
+const settings = { template: DEFAULT_TEMPLATE, language: DEFAULT_LANGUAGE };
 
 // Builds the exercise body that the user sees in the preview box (no rules)
 function buildExerciseBody(title, exercises) {
@@ -56,9 +68,15 @@ function buildExerciseBody(title, exercises) {
   return md;
 }
 
-// Builds the full prompt that gets copied/saved (rules prepended, hidden from user)
+// Builds the full prompt that gets copied/saved by substituting the template tokens.
+// Order matters: replace the scalar tokens first, then [AUFGABE] last so bracketed
+// markers inside the extracted body (e.g. [Graph …], [Auswahloptionen]) are left intact.
 function buildFullPrompt(title, exercises) {
-  return `# Task: Universal formulas for a MINT.SH exercise\n${RULES}\n\n${buildExerciseBody(title, exercises)}`;
+  const taskTitle = title.trim() || 'Aufgabe';
+  return settings.template
+    .split('[SPRACHE]').join(settings.language)
+    .split('[TITEL]').join(taskTitle)
+    .split('[AUFGABE]').join(buildExerciseBody(title, exercises));
 }
 
 async function getCurrentTab() {
@@ -66,7 +84,114 @@ async function getCurrentTab() {
   return tab;
 }
 
+// ── Settings persistence ──
+async function loadSettings() {
+  try {
+    const stored = await chrome.storage.local.get(['pym_template', 'pym_language']);
+    if (typeof stored.pym_template === 'string') settings.template = stored.pym_template;
+    if (typeof stored.pym_language === 'string') settings.language = stored.pym_language;
+  } catch (e) { /* storage unavailable — keep defaults */ }
+}
+
+function saveSettings() {
+  try {
+    chrome.storage.local.set({ pym_template: settings.template, pym_language: settings.language });
+  } catch (e) { /* ignore */ }
+}
+
+// ── Bracket highlighting for the template editor ──
+function escapeHtml(s) {
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+// Wrap every [ … ] token in <mark> so the brackets and their text stand out.
+function highlightBrackets(text) {
+  const safe = escapeHtml(text).replace(/\[[^\]\n]*\]/g, m => `<mark>${m}</mark>`);
+  return safe + '\n';   // trailing newline keeps the backdrop in step with the textarea
+}
+
+// ── Settings panel wiring ──
+// onChange() is invoked whenever language/template change, so an already-extracted
+// preview rebuilds with the new settings.
+function initSettingsPanel(onChange) {
+  const gear     = document.getElementById('settings-btn');
+  const back     = document.getElementById('settings-back');
+  const mainView = document.getElementById('main-view');
+  const setView  = document.getElementById('settings-view');
+  const langSel  = document.getElementById('lang-select');
+  const tplInput = document.getElementById('tpl-input');
+  const tplHi    = document.getElementById('tpl-highlights');
+  const resetBtn = document.getElementById('reset-tpl-btn');
+  const savedMsg = document.getElementById('settings-saved');
+
+  function renderHighlights() {
+    tplHi.innerHTML = highlightBrackets(tplInput.value);
+    syncScroll();
+  }
+  function syncScroll() {
+    tplHi.parentElement.scrollTop  = tplInput.scrollTop;
+    tplHi.parentElement.scrollLeft = tplInput.scrollLeft;
+  }
+  let savedTimer;
+  function flashSaved() {
+    savedMsg.classList.add('show');
+    clearTimeout(savedTimer);
+    savedTimer = setTimeout(() => savedMsg.classList.remove('show'), 1100);
+  }
+
+  // Reflect current settings into the controls
+  langSel.value  = settings.language;
+  tplInput.value = settings.template;
+  renderHighlights();
+
+  gear.addEventListener('click', () => {
+    mainView.classList.add('hidden');
+    setView.classList.remove('hidden');
+    renderHighlights();   // backdrop metrics are correct once visible
+  });
+  back.addEventListener('click', () => {
+    setView.classList.add('hidden');
+    mainView.classList.remove('hidden');
+  });
+
+  langSel.addEventListener('input', () => {
+    settings.language = langSel.value;
+    saveSettings(); flashSaved(); onChange();
+  });
+
+  tplInput.addEventListener('input', () => {
+    settings.template = tplInput.value;
+    renderHighlights();
+    saveSettings(); flashSaved(); onChange();
+  });
+  tplInput.addEventListener('scroll', syncScroll);
+
+  resetBtn.addEventListener('click', () => {
+    settings.template = DEFAULT_TEMPLATE;
+    settings.language = DEFAULT_LANGUAGE;
+    tplInput.value = DEFAULT_TEMPLATE;
+    langSel.value  = DEFAULT_LANGUAGE;
+    renderHighlights();
+    saveSettings(); flashSaved(); onChange();
+  });
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
+  // Holds the full prompt (rules + exercise) — copied/saved but never shown
+  let fullPrompt = '';
+  let lastData   = null;
+  let lastTitle  = '';
+
+  function rebuild() {
+    if (!lastData) return;
+    document.getElementById('output').value = buildExerciseBody(lastTitle, lastData);
+    fullPrompt = buildFullPrompt(lastTitle, lastData);
+  }
+
+  // Settings are available on every page, not just mintsh.de
+  await loadSettings();
+  initSettingsPanel(rebuild);
+
   const tab = await getCurrentTab();
   const isMint = tab.url && tab.url.includes('mintsh.de');
 
@@ -77,23 +202,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   document.getElementById('on-mint').classList.remove('hidden');
 
-  // Holds the full prompt (rules + exercise) — copied/saved but never shown
-  let fullPrompt = '';
-  let lastData   = null;
-  let lastTitle  = '';
-
   function autoTitle(meta) {
     if (!meta) return 'Aufgabe';
     const parts = ['Test'];
     if (meta.course) parts.push(meta.course);
     if (meta.qno)    parts.push('Aufgabe', meta.qno);
     return parts.join(' ');
-  }
-
-  function rebuild() {
-    if (!lastData) return;
-    document.getElementById('output').value = buildExerciseBody(lastTitle, lastData);
-    fullPrompt = buildFullPrompt(lastTitle, lastData);
   }
 
   document.getElementById('extract-btn').addEventListener('click', async () => {

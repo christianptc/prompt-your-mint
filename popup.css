@@ -58,6 +58,26 @@ body {
 
 .logo { display: flex; align-items: center; gap: 9px; }
 
+.header-right { display: flex; align-items: center; gap: 8px; }
+
+/* Gear / back icon buttons */
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  background: #fff;
+  color: var(--ink-soft);
+  border: 1.5px solid var(--grid-bold);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s, transform 0.2s;
+}
+.icon-btn:hover { background: var(--mint-wash); color: var(--mint-deep); border-color: var(--mint); }
+.icon-btn:active { transform: rotate(35deg); }
+
 .logo-text {
   font-size: 15px;
   font-weight: 800;
@@ -235,6 +255,142 @@ body {
   transition: opacity 0.4s;
 }
 .toast.fade { opacity: 0; }
+
+/* ── Settings view ── */
+.settings-head {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 14px;
+}
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  background: #fff;
+  color: var(--ink-soft);
+  border: 1.5px solid var(--grid-bold);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.back-btn:hover { background: var(--mint-wash); color: var(--mint-deep); border-color: var(--mint); }
+.settings-title { font-size: 15px; font-weight: 800; letter-spacing: -0.3px; color: var(--ink); }
+
+.settings-section { margin-top: 16px; }
+
+.select-input {
+  width: 100%;
+  padding: 8px 11px;
+  border: 1.5px solid var(--grid-bold);
+  border-radius: var(--radius);
+  font-size: 13px;
+  font-family: inherit;
+  color: var(--ink);
+  background: #fff;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.select-input:focus { border-color: var(--mint); box-shadow: 0 0 0 3px var(--mint-wash); }
+
+/* Inline token chip — makes [BRACKETS] stand out in prose */
+.tok {
+  font-family: Consolas, "SFMono-Regular", "Liberation Mono", monospace;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--mint-deep);
+  background: var(--mint-wash);
+  border: 1px solid var(--grid-bold);
+  border-radius: 4px;
+  padding: 1px 5px;
+}
+
+.token-legend {
+  list-style: none;
+  margin: 0 0 12px;
+  padding: 0;
+}
+.token-legend li {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 6px;
+  font-size: 11px;
+  line-height: 1.45;
+  color: var(--ink-soft);
+}
+.token-legend .tok { flex-shrink: 0; }
+
+/* ── Highlighted template editor ──
+   A backdrop renders the text with <mark>ed brackets; the textarea sits on top
+   with transparent text so the highlights show through. Both share metrics. */
+.editor {
+  position: relative;
+  margin-bottom: 10px;
+}
+.editor-backdrop,
+#tpl-input {
+  /* shared box + text metrics — must stay identical for alignment */
+  width: 100%;
+  padding: 11px 12px 11px 13px;
+  border: 1.5px solid var(--grid-bold);
+  border-left: 4px solid var(--mint);
+  border-radius: var(--radius);
+  font-family: Consolas, "SFMono-Regular", "Liberation Mono", monospace;
+  font-size: 11.5px;
+  line-height: 1.6;
+  letter-spacing: normal;
+}
+.editor-backdrop {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: #fff;
+  color: var(--ink);
+  pointer-events: none;
+}
+.editor-highlights {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+.editor-highlights mark {
+  /* the standout look for [ ... ] tokens */
+  background: var(--mint-wash);
+  color: var(--mint-deep);
+  font-weight: 700;
+  border-radius: 3px;
+  box-shadow: 0 0 0 1px var(--grid-bold);
+}
+#tpl-input {
+  position: relative;
+  display: block;
+  height: 230px;
+  margin: 0;
+  resize: vertical;
+  background: transparent;
+  color: transparent;        /* hide own glyphs — backdrop shows them */
+  caret-color: var(--ink);
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  outline: none;
+}
+#tpl-input::selection { background: var(--mint-wash); }
+#tpl-input:focus { border-color: var(--mint); border-left-color: var(--mint-deep); }
+
+.settings-actions { justify-content: flex-start; }
+
+.settings-saved {
+  color: var(--mint-deep);
+  font-weight: 700;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.settings-saved.show { opacity: 1; }
 
 /* ── Utility ── */
 .hidden { display: none !important; }

@@ -22,9 +22,19 @@
         </svg>
         <span class="logo-text">Prompt<span class="accent">YourMint</span></span>
       </div>
-      <span class="badge">mintsh.de</span>
+      <div class="header-right">
+        <span class="badge">mintsh.de</span>
+        <button id="settings-btn" class="icon-btn" title="Einstellungen" aria-label="Einstellungen">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M19.4 13a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.7"/>
+          </svg>
+        </button>
+      </div>
     </div>
 
+    <!-- ── Main view ── -->
+    <div id="main-view">
     <div id="not-on-mint" class="state-msg hidden">
       <div class="state-icon">🔒</div>
       <p>Öffne eine Aufgabe auf <strong>mintsh.de</strong>, um zu starten.</p>
@@ -70,6 +80,50 @@
         <div class="state-icon">📭</div>
         <p>Keine Aufgabe auf dieser Seite gefunden.</p>
       </div>
+    </div>
+    </div><!-- /main-view -->
+
+    <!-- ── Settings view ── -->
+    <div id="settings-view" class="hidden">
+      <div class="settings-head">
+        <button id="settings-back" class="back-btn" title="Zurück" aria-label="Zurück">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M10 2 L4 8 L10 14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <span class="settings-title">Einstellungen</span>
+      </div>
+
+      <label class="field-label" for="lang-select">Ausgabesprache</label>
+      <input id="lang-select" type="text" class="select-input" placeholder="z. B. Deutsch, English, Français …" autocomplete="off" spellcheck="false" />
+      <p class="hint">Die Sprache wird im Prompt über den Platzhalter <code class="tok">[SPRACHE]</code> eingesetzt.</p>
+
+      <label class="field-label settings-section" for="tpl-input">Prompt-Vorlage</label>
+      <p class="hint" style="margin-top:0;margin-bottom:8px">
+        Passe an, wie der Prompt aufgebaut wird. Platzhalter in eckigen Klammern werden beim
+        Kopieren automatisch ersetzt:
+      </p>
+      <ul class="token-legend">
+        <li><code class="tok">[AUFGABE]</code> <span>der von der Seite extrahierte Aufgabentext (Fragen, Eingabefelder, Auswahloptionen, Grafiken)</span></li>
+        <li><code class="tok">[TITEL]</code> <span>der automatisch erzeugte Titel der Aufgabe</span></li>
+        <li><code class="tok">[SPRACHE]</code> <span>die oben gewählte Ausgabesprache</span></li>
+      </ul>
+
+      <div class="editor">
+        <div class="editor-backdrop"><div id="tpl-highlights" class="editor-highlights"></div></div>
+        <textarea id="tpl-input" spellcheck="false" rows="14"></textarea>
+      </div>
+
+      <div class="action-row settings-actions">
+        <button id="reset-tpl-btn" class="btn-secondary">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-right:6px">
+            <path d="M3 8 a5 5 0 1 1 1.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" fill="none"/>
+            <path d="M3 4 V8 H7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          </svg>
+          Auf Standard zurücksetzen
+        </button>
+      </div>
+      <div id="settings-saved" class="hint settings-saved">Gespeichert ✓</div>
     </div>
   </div>
   <script src="popup.js"></script>

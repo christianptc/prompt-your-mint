@@ -22,6 +22,6 @@
       "js": ["content.js"]
     }
   ],
-  "permissions": ["activeTab", "scripting"],
+  "permissions": ["activeTab", "scripting", "storage"],
   "host_permissions": ["*://*.mintsh.de/*"]
 }
