@@ -392,6 +392,31 @@ body {
 }
 .settings-saved.show { opacity: 1; }
 
+.settings-footer {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1.5px solid var(--grid-bold);
+  display: flex;
+  justify-content: center;
+}
+.repo-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ink-soft);
+  text-decoration: none;
+  padding: 6px 12px;
+  border: 1.5px solid var(--grid-bold);
+  border-radius: var(--radius);
+  background: #fff;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.repo-link:hover { background: var(--mint-wash); color: var(--mint-deep); border-color: var(--mint); }
+.repo-link .ext-arrow { color: var(--ink-soft); }
+.repo-link:hover .ext-arrow { color: var(--mint-deep); }
+
 /* ── Utility ── */
 .hidden { display: none !important; }
 
