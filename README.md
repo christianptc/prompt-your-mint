@@ -24,6 +24,22 @@ The prompt includes:
 
 The AI rules are **never shown to you** — they're silently prepended when you copy or save, so the preview stays clean.
 
+### Customizable (⚙️ Settings)
+
+Click the gear icon to open **Einstellungen**, where you can:
+- **Set the output language** — type any language (`Deutsch`, `English`, `Français`, …); it's inserted into the prompt via the `[SPRACHE]` token.
+- **Edit the prompt template** — change the rules and structure however you like. Placeholders in square brackets are highlighted as you type and replaced when you copy/save:
+
+  | Token | Replaced with |
+  |---|---|
+  | `[AUFGABE]` | the exercise extracted from the page (questions, input fields, options, graphs) |
+  | `[TITEL]` | the auto-generated exercise title |
+  | `[SPRACHE]` | the output language set above |
+
+- **Reset to default** — restore the original template and language with one click.
+
+Your settings are saved automatically and persist across sessions (`chrome.storage`).
+
 ---
 
 ## Screenshots
@@ -33,6 +49,9 @@ The AI rules are **never shown to you** — they're silently prepended when you 
 
 ### Extracted exercise preview
 ![Extracted preview](screenshots/preview.png)
+
+### Settings — language, editable template with highlighted tokens, reset
+![Settings panel](screenshots/settings.png)
 
 ### AI output example — with formula, substitution, result, graph check
 ![AI output](screenshots/ai_output.png)
@@ -83,7 +102,7 @@ The extension is **inactive on all other sites** — the icon only becomes funct
 
 ## AI prompt structure
 
-Every copied/saved prompt follows this format:
+By default, every copied/saved prompt follows this format (fully editable in ⚙️ Settings):
 
 ```
 # Task: Universal formulas for a MINT.SH exercise
@@ -123,7 +142,7 @@ prompt-your-mint/
 │   ├── icon16.png
 │   ├── icon48.png
 │   └── icon128.png
-└── screenshots/        # README screenshots (add your own)
+└── screenshots/        # README screenshots
 ```
 
 ---
