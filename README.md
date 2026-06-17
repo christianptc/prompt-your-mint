@@ -37,8 +37,6 @@ The AI rules are **never shown to you** — they're silently prepended when you 
 ### AI output example — with formula, substitution, result, graph check
 ![AI output](screenshots/ai_output.png)
 
-> **To add screenshots:** Load the extension in Chrome, open an exercise on mintsh.de, take a screenshot of the popup and of a sample AI response, and save them as `screenshots/popup.png`, `screenshots/preview.png`, and `screenshots/ai_output.png`.
-
 ---
 
 ## Installation
@@ -127,12 +125,6 @@ prompt-your-mint/
 │   └── icon128.png
 └── screenshots/        # README screenshots (add your own)
 ```
-
----
-
-## Design
-
-The UI is styled after a **kariertes Rechenheft** (squared math notebook) — the same paper these exercises are actually solved on. Faint teal grid, coral margin line, ink-blue text, and a plotted-line logo that ties into the graph-checking feature.
 
 ---
 
