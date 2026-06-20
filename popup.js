@@ -229,6 +229,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         rebuild();
         document.getElementById('output-area').classList.remove('hidden');
         document.getElementById('no-exercise').classList.add('hidden');
+        if (fullPrompt) {
+          try {
+            await navigator.clipboard.writeText(fullPrompt);
+            showToast();
+          } catch (_) { /* clipboard may be unavailable; ignore */ }
+        }
       }
     } catch (e) {
       document.getElementById('no-exercise').classList.remove('hidden');
